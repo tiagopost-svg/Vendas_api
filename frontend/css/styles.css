@@ -1,0 +1,176 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.card {
+  border-radius: 1rem;
+}
+
+.dashboard-page {
+  background: linear-gradient(180deg, #eef4ff 0%, #f7f9fc 32%, #f5f7fb 100%);
+  min-height: 100vh;
+}
+
+.dashboard-hero {
+  background: radial-gradient(circle at top right, rgba(13, 110, 253, 0.12), transparent 30%), #ffffff;
+}
+
+.dashboard-filter {
+  background: #f8fbff;
+}
+
+.dashboard-stat-card,
+.dashboard-kpi-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dashboard-stat-card:hover,
+.dashboard-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 1rem 2rem rgba(13, 24, 45, 0.08);
+}
+
+.dashboard-kpi-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.chart-lg {
+  height: 360px;
+}
+
+.chart-md {
+  height: 300px;
+}
+
+.followup-card,
+.followup-list-item {
+  border-left: 4px solid transparent;
+}
+
+.followup-list-item {
+  border-radius: 0.75rem;
+}
+
+.followup-overdue {
+  border-left-color: #dc3545 !important;
+  background: rgba(220, 53, 69, 0.05);
+}
+
+
+.timeline-list {
+  position: relative;
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: 3rem;
+  margin-bottom: 1rem;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 1rem;
+  top: 0;
+  bottom: -1rem;
+  width: 2px;
+  background: #d9e2f3;
+}
+
+.timeline-item:last-child::before {
+  bottom: 2.5rem;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: 0;
+  top: 1rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 2px solid #c8d8ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.timeline-item-destaque .timeline-content {
+  border: 1px solid rgba(25, 135, 84, 0.2);
+  background: rgba(25, 135, 84, 0.04);
+}
+
+.timeline-trigger {
+  cursor: pointer;
+}
+
+.timeline-detail {
+  border-top: 1px solid #e9ecef;
+  padding-top: 0.75rem;
+}
+
+.crm-progress .progress {
+  height: 1.75rem;
+}
+
+.visita-actions .btn {
+  min-width: 10rem;
+}
+
+@media (max-width: 768px) {
+  .visita-actions .btn {
+    width: 100%;
+  }
+
+  .chart-lg,
+  .chart-md {
+    height: 280px;
+  }
+}
+
+.navbar-notification-badge {
+  position: absolute;
+  top: -0.35rem;
+  right: -0.45rem;
+  min-width: 1.35rem;
+}
+
+.notification-card {
+  border-left: 4px solid transparent;
+}
+
+.notification-unread {
+  box-shadow: 0 0.5rem 1.5rem rgba(13, 110, 253, 0.08);
+}
+
+.notification-priority-high {
+  border-left-color: #dc3545;
+  background: rgba(220, 53, 69, 0.03);
+}
+
+.notification-priority-medium {
+  border-left-color: #ffc107;
+  background: rgba(255, 193, 7, 0.05);
+}
+
+.notification-priority-low {
+  border-left-color: #6c757d;
+}
+
+.visita-highlight,
+.orcamento-highlight {
+  border: 1px solid rgba(13, 110, 253, 0.35) !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.08) !important;
+}
