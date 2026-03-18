@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRM SaaS | Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="dashboard-page">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+      <div class="container-fluid px-4">
+        <span class="navbar-brand fw-semibold">CRM SaaS</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <a href="clientes.html" class="btn btn-outline-light btn-sm">Clientes</a>
+          <a href="visitas.html" class="btn btn-outline-light btn-sm">Visitas</a>
+          <a href="vendas.html" class="btn btn-outline-light btn-sm">Vendas</a>
+          <a href="orcamentos.html" class="btn btn-outline-light btn-sm">Orçamentos</a>
+          <a href="followups.html" class="btn btn-outline-light btn-sm">Follow-ups</a>
+          <a href="notificacoes.html" class="btn btn-light btn-sm position-relative">
+            🔔
+            <span id="navbarNotificacoesCount" class="badge rounded-pill text-bg-danger navbar-notification-badge d-none">0</span>
+          </a>
+          <span class="badge bg-light text-primary" id="empresaBadge">Empresa</span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-4">
+      <section class="dashboard-hero card border-0 shadow-sm mb-4">
+        <div class="card-body p-4 p-lg-5">
+          <div class="row g-4 align-items-center">
+            <div class="col-lg-8">
+              <p class="text-uppercase text-primary fw-semibold small mb-2">Painel executivo</p>
+              <h1 class="display-6 fw-bold mb-2">Indicadores comerciais, follow-ups e conversões em tempo real</h1>
+              <p class="text-muted mb-0">
+                Acompanhe clientes, visitas, orçamentos, vendas, faturamento e automações de follow-up sem sair do CRM.
+              </p>
+            </div>
+            <div class="col-lg-4">
+              <div class="dashboard-filter card border-0 shadow-sm">
+                <div class="card-body">
+                  <label for="periodoFiltro" class="form-label fw-semibold mb-2">Período</label>
+                  <select id="periodoFiltro" class="form-select mb-3">
+                    <option value="hoje">Hoje</option>
+                    <option value="7_dias">7 dias</option>
+                    <option value="30_dias">30 dias</option>
+                    <option value="mes_atual" selected>Mês atual</option>
+                  </select>
+                  <div class="small text-muted">O filtro atualiza visitas, orçamentos, vendas, faturamento, ticket e conversões.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div id="dashboardMensagem" class="alert d-none" role="alert"></div>
+
+      <section class="row g-3 mb-4">
+        <div class="col-6 col-xl-2">
+          <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+            <div class="card-body">
+              <p class="text-muted mb-2 small">Total de clientes</p>
+              <h2 class="fw-bold mb-0" data-card="clientes">0</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-2">
+          <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+            <div class="card-body">
+              <p class="text-muted mb-2 small">Visitas no período</p>
+              <h2 class="fw-bold mb-0" data-card="visitas">0</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-2">
+          <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+            <div class="card-body">
+              <p class="text-muted mb-2 small">Orçamentos no período</p>
+              <h2 class="fw-bold mb-0" data-card="orcamentos">0</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-2">
+          <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+            <div class="card-body">
+              <p class="text-muted mb-2 small">Vendas no período</p>
+              <h2 class="fw-bold mb-0" data-card="vendas">0</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-2">
+          <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+            <div class="card-body">
+              <p class="text-muted mb-2 small">Faturamento</p>
+              <h2 class="fw-bold mb-0" data-card="faturamento">R$ 0,00</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-2">
+          <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+            <div class="card-body">
+              <p class="text-muted mb-2 small">Ticket médio</p>
+              <h2 class="fw-bold mb-0" data-card="ticket">R$ 0,00</h2>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row g-3 mb-4">
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm h-100 dashboard-kpi-card">
+            <div class="card-body d-flex justify-content-between align-items-center gap-3">
+              <div>
+                <p class="text-muted mb-1">Conversão Visitas → Orçamentos</p>
+                <h3 class="fw-bold mb-0" data-card="conv-visita-orcamento">0%</h3>
+              </div>
+              <span class="dashboard-kpi-icon bg-info-subtle text-info">V→O</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm h-100 dashboard-kpi-card">
+            <div class="card-body d-flex justify-content-between align-items-center gap-3">
+              <div>
+                <p class="text-muted mb-1">Conversão Orçamentos → Vendas</p>
+                <h3 class="fw-bold mb-0" data-card="conv-orcamento-venda">0%</h3>
+              </div>
+              <span class="dashboard-kpi-icon bg-success-subtle text-success">O→V</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row g-3 mb-4">
+        <div class="col-md-6 col-xl-3">
+          <div class="card border-0 shadow-sm h-100 dashboard-stat-card">
+            <div class="card-body">
+              <p class="text-muted mb-2 small">Follow-ups pendentes</p>
+              <h2 class="fw-bold mb-0" data-card="followups-pendentes">0</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+          <div class="card border-0 shadow-sm h-100 dashboard-stat-card border-danger-subtle">
+            <div class="card-body">
+              <p class="text-muted mb-2 small">Follow-ups atrasados</p>
+              <h2 class="fw-bold mb-0 text-danger" data-card="followups-atrasados">0</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-3">
+                <div>
+                  <h3 class="h5 mb-1">Notificações de follow-up</h3>
+                  <p class="text-muted small mb-0">Próximas ações e contatos atrasados do usuário logado.</p>
+                </div>
+                <a href="followups.html" class="btn btn-outline-primary btn-sm">Abrir follow-ups</a>
+              </div>
+              <div id="followupNotificacoes" class="list-group list-group-flush">
+                <div class="text-muted small">Carregando notificações...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row g-4">
+        <div class="col-xl-8">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <div>
+                  <h3 class="h5 mb-1">Vendas por mês</h3>
+                  <p class="text-muted small mb-0">Últimos 6 meses com volume de vendas e faturamento.</p>
+                </div>
+                <span class="badge text-bg-light" id="periodoLabel">Mês atual</span>
+              </div>
+              <div class="chart-wrapper chart-lg">
+                <canvas id="graficoVendas"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <h3 class="h5 mb-1">Vendas por status</h3>
+              <p class="text-muted small mb-3">Distribuição das vendas dentro do período selecionado.</p>
+              <div class="chart-wrapper chart-md">
+                <canvas id="graficoStatus"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h3 class="h5 mb-1">Funil comercial</h3>
+              <p class="text-muted small mb-3">Comparativo entre visitas, orçamentos e vendas no período.</p>
+              <div class="chart-wrapper chart-md">
+                <canvas id="graficoFunil"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>

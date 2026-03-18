@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRM SaaS | Orçamentos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="dashboard-page">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+      <div class="container-fluid px-4">
+        <span class="navbar-brand fw-semibold">CRM SaaS</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <a href="dashboard.html" class="btn btn-outline-light btn-sm">Dashboard</a>
+          <a href="clientes.html" class="btn btn-outline-light btn-sm">Clientes</a>
+          <a href="visitas.html" class="btn btn-outline-light btn-sm">Visitas</a>
+          <a href="vendas.html" class="btn btn-outline-light btn-sm">Vendas</a>
+          <a href="followups.html" class="btn btn-outline-light btn-sm">Follow-ups</a>
+          <a href="notificacoes.html" class="btn btn-light btn-sm position-relative">
+            🔔
+            <span id="navbarNotificacoesCount" class="badge rounded-pill text-bg-danger navbar-notification-badge d-none">0</span>
+          </a>
+          <span class="badge bg-light text-primary" id="empresaBadge">Empresa</span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-4">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h1 class="h4 mb-3">Novo orçamento</h1>
+              <form id="orcamentoForm">
+                <input type="hidden" id="orcamentoId" />
+                <div class="mb-3">
+                  <label for="visita_id" class="form-label">Visita (opcional)</label>
+                  <select id="visita_id" class="form-select">
+                    <option value="">Sem vínculo</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="cliente_id" class="form-label">Cliente</label>
+                  <select id="cliente_id" class="form-select" required>
+                    <option value="">Selecione um cliente</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="descricao" class="form-label">Descrição</label>
+                  <textarea id="descricao" class="form-control" rows="4" required></textarea>
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="valor" class="form-label">Valor</label>
+                    <input type="number" class="form-control" id="valor" step="0.01" min="0" required />
+                  </div>
+                  <div class="col-md-6">
+                    <label for="status" class="form-label">Status</label>
+                    <select id="status" class="form-select" required>
+                      <option value="pendente">Pendente</option>
+                      <option value="aprovado">Aprovado</option>
+                      <option value="recusado">Recusado</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mt-3 mb-3">
+                  <label for="data_validade" class="form-label">Data de validade</label>
+                  <input type="date" class="form-control" id="data_validade" required />
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary">Salvar</button>
+                  <button type="button" class="btn btn-outline-secondary d-none" id="cancelarEdicao">Cancelar</button>
+                </div>
+              </form>
+              <div id="orcamentosMensagem" class="alert mt-3 d-none" role="alert"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <h2 class="h4 mb-0">Lista de orçamentos</h2>
+                <div class="d-flex gap-2">
+                  <select id="filtroStatus" class="form-select">
+                    <option value="">Todos os status</option>
+                    <option value="pendente">Pendente</option>
+                    <option value="aprovado">Aprovado</option>
+                    <option value="recusado">Recusado</option>
+                  </select>
+                  <button type="button" class="btn btn-outline-primary btn-sm" id="recarregarOrcamentos">Atualizar</button>
+                </div>
+              </div>
+              <div id="orcamentosLista" class="row g-3">
+                <div class="col-12 text-center text-muted py-4">Carregando orçamentos...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="js/orcamentos.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRM SaaS | Vendas</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="dashboard-page">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+      <div class="container-fluid px-4">
+        <span class="navbar-brand fw-semibold">CRM SaaS</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <a href="dashboard.html" class="btn btn-outline-light btn-sm">Dashboard</a>
+          <a href="clientes.html" class="btn btn-outline-light btn-sm">Clientes</a>
+          <a href="visitas.html" class="btn btn-outline-light btn-sm">Visitas</a>
+          <a href="orcamentos.html" class="btn btn-outline-light btn-sm">Orçamentos</a><a href="followups.html" class="btn btn-outline-light btn-sm">Follow-ups</a>
+          <a href="notificacoes.html" class="btn btn-light btn-sm position-relative">
+            🔔
+            <span id="navbarNotificacoesCount" class="badge rounded-pill text-bg-danger navbar-notification-badge d-none">0</span>
+          </a>
+          <span class="badge bg-light text-primary" id="empresaBadge">Empresa</span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-4">
+      <div class="row g-4 mb-4">
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <p class="text-muted mb-2">Total vendido</p>
+              <h1 class="fw-bold mb-0" id="totalVendas">R$ 0,00</h1>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <p class="text-muted mb-2">Quantidade de vendas</p>
+              <h2 class="fw-bold mb-0" id="quantidadeVendas">0</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h1 class="h4 mb-3">Nova venda</h1>
+              <form id="vendaForm">
+                <input type="hidden" id="vendaId" />
+                <div class="mb-3">
+                  <label for="cliente_id" class="form-label">Cliente ID</label>
+                  <input type="number" class="form-control" id="cliente_id" required />
+                </div>
+                <div class="mb-3">
+                  <label for="valor" class="form-label">Valor</label>
+                  <input type="number" class="form-control" id="valor" step="0.01" min="0" required />
+                </div>
+                <div class="mb-3">
+                  <label for="status" class="form-label">Status</label>
+                  <select id="status" class="form-select" required>
+                    <option value="em_andamento">Em andamento</option>
+                    <option value="fechado">Fechado</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="forma_pagamento" class="form-label">Forma de pagamento</label>
+                  <input type="text" class="form-control" id="forma_pagamento" placeholder="PIX, boleto, cartão..." required />
+                </div>
+                <div class="mb-3">
+                  <label for="data_venda" class="form-label">Data da venda</label>
+                  <input type="date" class="form-control" id="data_venda" required />
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary">Salvar</button>
+                  <button type="button" class="btn btn-outline-secondary d-none" id="cancelarEdicao">Cancelar</button>
+                </div>
+              </form>
+              <div id="vendasMensagem" class="alert mt-3 d-none" role="alert"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <h2 class="h4 mb-0">Lista de vendas</h2>
+                <div class="d-flex gap-2">
+                  <select id="filtroStatus" class="form-select">
+                    <option value="">Todos os status</option>
+                    <option value="em_andamento">Em andamento</option>
+                    <option value="fechado">Fechado</option>
+                  </select>
+                  <button type="button" class="btn btn-outline-primary btn-sm" id="recarregarVendas">Atualizar</button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Cliente</th>
+                      <th>Status</th>
+                      <th>Pagamento</th>
+                      <th>Data</th>
+                      <th>Valor</th>
+                      <th class="text-end">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="vendasTabelaBody">
+                    <tr>
+                      <td colspan="7" class="text-center text-muted py-4">Carregando vendas...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="js/vendas.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>
