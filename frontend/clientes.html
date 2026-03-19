@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRM SaaS | Clientes</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="dashboard-page">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+      <div class="container-fluid px-4">
+        <span class="navbar-brand fw-semibold">CRM SaaS</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <a href="dashboard.html" class="btn btn-outline-light btn-sm">Dashboard</a>
+          <a href="visitas.html" class="btn btn-outline-light btn-sm">Visitas</a>
+          <a href="vendas.html" class="btn btn-outline-light btn-sm">Vendas</a><a href="orcamentos.html" class="btn btn-outline-light btn-sm">Orçamentos</a>
+          <a href="followups.html" class="btn btn-outline-light btn-sm">Follow-ups</a>
+          <a href="notificacoes.html" class="btn btn-light btn-sm position-relative">
+            🔔
+            <span id="navbarNotificacoesCount" class="badge rounded-pill text-bg-danger navbar-notification-badge d-none">0</span>
+          </a>
+          <span class="badge bg-light text-primary" id="empresaBadge">Empresa</span>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-4">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <h1 class="h4 mb-3">Cadastro de cliente</h1>
+              <form id="clienteForm">
+                <input type="hidden" id="clienteId" />
+                <div class="mb-3">
+                  <label for="nome" class="form-label">Nome</label>
+                  <input type="text" class="form-control" id="nome" required />
+                </div>
+                <div class="mb-3">
+                  <label for="telefone" class="form-label">Telefone</label>
+                  <input type="text" class="form-control" id="telefone" />
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">E-mail</label>
+                  <input type="email" class="form-control" id="email" />
+                </div>
+                <div class="mb-3">
+                  <label for="cidade" class="form-label">Cidade</label>
+                  <input type="text" class="form-control" id="cidade" />
+                </div>
+                <div class="mb-3">
+                  <label for="endereco" class="form-label">Endereço</label>
+                  <input type="text" class="form-control" id="endereco" />
+                </div>
+                <div class="mb-3">
+                  <label for="endereco_fiscal" class="form-label">Endereço fiscal</label>
+                  <input type="text" class="form-control" id="endereco_fiscal" />
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="cpf" class="form-label">CPF</label>
+                    <input type="text" class="form-control" id="cpf" />
+                  </div>
+                  <div class="col-md-6">
+                    <label for="cnpj" class="form-label">CNPJ</label>
+                    <input type="text" class="form-control" id="cnpj" />
+                  </div>
+                </div>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="tipo" class="form-label">Tipo</label>
+                    <select id="tipo" class="form-select">
+                      <option value="residencial">Residencial</option>
+                      <option value="comercial">Comercial</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="status_pipeline" class="form-label">Status pipeline</label>
+                    <select id="status_pipeline" class="form-select">
+                      <option value="lead">Lead</option>
+                      <option value="contato">Contato</option>
+                      <option value="visita">Visita</option>
+                      <option value="orcamento">Orçamento</option>
+                      <option value="negociacao">Negociação</option>
+                      <option value="venda">Venda</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mt-3 mb-3">
+                  <label for="origem_lead" class="form-label">Origem do lead</label>
+                  <input type="text" class="form-control" id="origem_lead" placeholder="WhatsApp, Instagram, indicação..." />
+                </div>
+                <div class="mb-3">
+                  <label for="observacoes" class="form-label">Observações</label>
+                  <textarea id="observacoes" class="form-control" rows="4"></textarea>
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary">Salvar</button>
+                  <button type="button" class="btn btn-outline-secondary d-none" id="cancelarEdicao">Cancelar</button>
+                </div>
+              </form>
+              <div id="clientesMensagem" class="alert mt-3 d-none" role="alert"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="card border-0 shadow-sm">
+            <div class="card-body">
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                <h2 class="h4 mb-0">Lista de clientes</h2>
+                <div class="d-flex flex-wrap gap-2">
+                  <input type="search" class="form-control" id="busca" placeholder="Buscar por nome" />
+                  <select id="filtroStatus" class="form-select">
+                    <option value="">Todos os status</option>
+                    <option value="lead">Lead</option>
+                    <option value="contato">Contato</option>
+                    <option value="visita">Visita</option>
+                    <option value="orcamento">Orçamento</option>
+                    <option value="negociacao">Negociação</option>
+                    <option value="venda">Venda</option>
+                  </select>
+                  <select id="ordenacao" class="form-select">
+                    <option value="desc">Mais novos</option>
+                    <option value="asc">Mais antigos</option>
+                  </select>
+                  <button type="button" class="btn btn-outline-primary btn-sm" id="recarregarClientes">Atualizar</button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nome</th>
+                      <th>Contato</th>
+                      <th>Pipeline</th>
+                      <th>Origem</th>
+                      <th>Cidade</th>
+                      <th class="text-end">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody id="clientesTabelaBody">
+                    <tr>
+                      <td colspan="7" class="text-center text-muted py-4">Carregando clientes...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mt-3">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="paginaAnterior">Anterior</button>
+                <span class="text-muted small" id="paginacaoInfo">Página 1</span>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="proximaPagina">Próxima</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="js/clientes.js"></script>
+    <script src="js/navbar.js"></script>
+  </body>
+</html>

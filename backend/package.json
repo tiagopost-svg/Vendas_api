@@ -1,0 +1,24 @@
+{
+  "name": "crm-saas-backend",
+  "version": "1.0.0",
+  "description": "Backend inicial para CRM SaaS multiempresa com Node.js, Express e PostgreSQL",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "check": "node --check server.js && node --check routes/authRoutes.js && node --check routes/clientesRoutes.js && node --check routes/visitasRoutes.js && node --check routes/vendasRoutes.js && node --check routes/orcamentosRoutes.js && node --check routes/dashboardRoutes.js && node --check routes/followupsRoutes.js && node --check controllers/authController.js && node --check controllers/clientesController.js && node --check controllers/visitasController.js && node --check controllers/vendasController.js && node --check controllers/orcamentosController.js && node --check controllers/dashboardController.js && node --check controllers/followupsController.js && node --check middlewares/authMiddleware.js && node --check middlewares/uploadMiddleware.js && node --check services/googleDriveService.js && node --check services/followupService.js && node --check services/followupAutomationService.js && node --check services/notificacaoService.js && node --check services/notificacaoAutomationService.js && node --check services/timelineService.js && node --check controllers/notificacoesController.js && node --check routes/notificacoesRoutes.js && node --check config/db.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "pg": "^8.13.1",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
+    "googleapis": "^144.0.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
