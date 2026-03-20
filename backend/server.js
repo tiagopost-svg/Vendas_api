@@ -18,7 +18,9 @@ const { iniciarAutomacaoNotificacoes } = require('./services/notificacaoAutomati
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT || 3000);
+const HOST = process.env.HOST || '0.0.0.0';
+const frontendPath = path.resolve(__dirname, '../frontend');
 
 app.use(cors());
 app.use(express.json());
@@ -48,9 +50,11 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/api/followups', followupsRoutes);
 app.use('/api/notificacoes', notificacoesRoutes);
 
+app.use(express.static(frontendPath));
+
 iniciarAutomacaoFollowups();
 iniciarAutomacaoNotificacoes();
 
-app.listen(PORT, () => {
-  console.log(`Servidor CRM SaaS rodando na porta ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Servidor CRM SaaS rodando em ${HOST}:${PORT}`);
 });

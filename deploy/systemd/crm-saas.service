@@ -1,0 +1,20 @@
+[Unit]
+Description=CRM SaaS Node.js application
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/crm-saas/backend
+Environment=NODE_ENV=production
+Environment=HOST=0.0.0.0
+Environment=PORT=3000
+ExecStart=/usr/bin/node /opt/crm-saas/backend/server.js
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/crm-saas.log
+StandardError=append:/var/log/crm-saas-error.log
+
+[Install]
+WantedBy=multi-user.target

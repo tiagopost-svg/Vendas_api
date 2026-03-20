@@ -136,6 +136,97 @@ http://localhost:3000
 
 Abra o arquivo `frontend/index.html` no navegador ou sirva a pasta frontend com um servidor estático.
 
+## Deploy em VPS com domínio
+
+Para o cenário informado (`crm.aceu.esp.br` → `104.248.223.70`), o projeto agora pode ser servido pelo próprio Express na porta `3000` e publicado externamente via Nginx em `80/443`.
+
+### Arquivos de deploy incluídos
+
+- `deploy/nginx/crm.aceu.esp.br.conf`: virtual host Nginx com proxy para `127.0.0.1:3000`.
+- `deploy/systemd/crm-saas.service`: unidade `systemd` para manter o Node.js ativo no boot.
+
+### Passo a passo recomendado
+
+1. **Instalar dependências do servidor**
+
+```bash
+sudo apt update
+sudo apt install -y nginx postgresql postgresql-contrib nodejs npm certbot python3-certbot-nginx
+```
+
+2. **Publicar o projeto**
+
+```bash
+sudo mkdir -p /opt/crm-saas
+sudo chown $USER:$USER /opt/crm-saas
+cd /opt/crm-saas
+git clone <SEU_REPOSITORIO_GIT> .
+cd backend
+npm install
+```
+
+3. **Configurar o banco**
+
+```bash
+sudo -u postgres createdb crm_saas
+psql -U postgres -d crm_saas -f /opt/crm-saas/database/schema.sql
+```
+
+4. **Configurar `.env` na raiz do projeto**
+
+Use pelo menos:
+
+```env
+HOST=0.0.0.0
+PORT=3000
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=crm_saas
+DB_USER=postgres
+DB_PASSWORD=<SENHA_DO_POSTGRES>
+JWT_SECRET=<SEGREDO_FORTE>
+JWT_EXPIRES_IN=8h
+```
+
+5. **Instalar a unidade do systemd**
+
+```bash
+sudo cp /opt/crm-saas/deploy/systemd/crm-saas.service /etc/systemd/system/crm-saas.service
+sudo systemctl daemon-reload
+sudo systemctl enable crm-saas
+sudo systemctl start crm-saas
+sudo systemctl status crm-saas
+```
+
+6. **Configurar o Nginx**
+
+```bash
+sudo cp /opt/crm-saas/deploy/nginx/crm.aceu.esp.br.conf /etc/nginx/sites-available/crm.aceu.esp.br
+sudo ln -s /etc/nginx/sites-available/crm.aceu.esp.br /etc/nginx/sites-enabled/crm.aceu.esp.br
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+7. **Emitir HTTPS com Let's Encrypt**
+
+```bash
+sudo certbot --nginx -d crm.aceu.esp.br
+```
+
+### Checklist para o erro `ERR_CONNECTION_REFUSED`
+
+Se o domínio continuar recusando conexão:
+
+- confirme se o serviço Node está ativo: `sudo systemctl status crm-saas`
+- confirme se a API responde localmente: `curl http://127.0.0.1:3000/api/health`
+- confirme se o Nginx está ativo: `sudo systemctl status nginx`
+- confirme se a porta `80` está ouvindo: `sudo ss -ltnp | grep ':80'`
+- confirme se a porta `3000` está ouvindo: `sudo ss -ltnp | grep ':3000'`
+- confirme DNS do domínio: `dig +short crm.aceu.esp.br`
+- confirme firewall/Cloud Firewall permitindo `80`, `443` e `22` para entrada
+
+> Importante: o Express agora também serve os arquivos do frontend diretamente. Assim, ao acessar `http://127.0.0.1:3000/`, a tela de login já deve abrir sem depender de outro servidor estático.
+
 ## Endpoints iniciais
 
 - `POST /api/auth/login`
