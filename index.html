@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Toldos Classic • CRM Pro Nível 3</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-900">
+  <header class="border-b border-slate-200 bg-gradient-to-r from-white via-yellow-50 to-red-50">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <div class="flex flex-col md:flex-row md:items-center gap-4 mb-2">
+        <img src="logo-toldos-classic.png" alt="Logo Toldos Classic" class="h-16 w-auto object-contain" onerror="this.style.display='none'" />
+        <h1 class="text-2xl md:text-3xl font-bold">Toldos Classic • CRM Pro Nível 3</h1>
+      </div>
+      <p class="text-slate-600 text-sm mt-1">Sistema online/offline com pipeline, kanban, conversão de orçamento em venda, alertas e histórico inteligente.</p>
+      <p class="text-blue-900 text-xs mt-1">Sugestão de stack: hospedar na DigitalOcean e arquivar exports (CSV/PDF/JSON) no Google Drive 2TB.</p>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+    <section id="kpis" class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3"></section>
+
+    <section class="grid xl:grid-cols-3 gap-6">
+      <article class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+        <h2 class="font-semibold text-lg mb-3">1) Novo chamado</h2>
+        <form id="leadForm" class="space-y-3">
+          <input id="cliente" required placeholder="Nome do cliente *" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <div class="grid sm:grid-cols-2 gap-3">
+            <input id="telefone" required placeholder="Telefone/WhatsApp *" class="rounded-lg border border-slate-300 px-3 py-2" />
+            <input id="email" type="email" placeholder="E-mail" class="rounded-lg border border-slate-300 px-3 py-2" />
+          </div>
+          <input id="contato" placeholder="Pessoa de contato" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Data do chamado</label>
+              <input id="dataChamado" type="date" required class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Data prevista da visita</label>
+              <input id="dataVisita" type="date" required class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Melhor horário</label>
+              <input id="melhorHorario" required placeholder="Ex.: 14:00" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Prioridade</label>
+              <select id="prioridade" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                <option value="NORMAL">Normal</option>
+                <option value="ALTA">Alta</option>
+                <option value="URGENTE">Urgente</option>
+              </select>
+            </div>
+          </div>
+          <input id="endereco" required placeholder="Endereço completo *" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <input id="cidade" required placeholder="Cidade *" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Próximo contato (data)</label>
+              <input id="proximoContatoData" type="date" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Próximo contato (hora)</label>
+              <input id="proximoContatoHora" placeholder="Ex.: 09:30" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+          </div>
+          <textarea id="lembretes" rows="2" placeholder="Lembretes" class="w-full rounded-lg border border-slate-300 px-3 py-2"></textarea>
+          <p id="duplicidadeAviso" class="hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2"></p>
+          <button class="w-full rounded-lg bg-blue-900 hover:bg-blue-800 text-white py-2 font-semibold">Salvar chamado</button>
+        </form>
+      </article>
+
+      <article class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+        <h2 class="font-semibold text-lg mb-3">2) Registrar visita</h2>
+        <form id="resultadoForm" class="space-y-3">
+          <select id="visitaSelect" required class="w-full rounded-lg border border-slate-300 px-3 py-2"></select>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Tipo de resultado</label>
+              <select id="tipoResultado" required class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                <option value="ORCAMENTO">ORÇAMENTO</option>
+                <option value="VENDA">VENDA</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs text-slate-600 mb-1">Valor da venda (R$)</label>
+              <input id="valorVenda" type="text" inputmode="decimal" placeholder="0,00" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+          </div>
+          <select id="formaPagamento" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+            <option value="">Forma de pagamento</option>
+            <option value="PIX">PIX</option>
+            <option value="DINHEIRO">Dinheiro</option>
+            <option value="CARTAO_DEBITO">Cartão de débito</option>
+            <option value="CARTAO_CREDITO">Cartão de crédito</option>
+            <option value="BOLETO">Boleto</option>
+          </select>
+          <div id="parceladoBox" class="hidden grid sm:grid-cols-2 gap-3">
+            <input id="qtdParcelas" type="number" min="1" max="24" placeholder="Quantidade de parcelas" class="rounded-lg border border-slate-300 px-3 py-2" />
+            <input id="valorParcela" readonly placeholder="Valor por parcela" class="rounded-lg bg-slate-50 border border-slate-300 px-3 py-2" />
+          </div>
+          <input id="prazoInstalacao" type="date" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <input id="desenhoToldo" type="file" accept="image/*" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <textarea id="observacaoVisita" rows="2" placeholder="Observações" class="w-full rounded-lg border border-slate-300 px-3 py-2"></textarea>
+          <button class="w-full rounded-lg bg-red-600 hover:bg-red-500 text-white py-2 font-semibold">Salvar visita</button>
+        </form>
+      </article>
+
+      <article class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+        <h2 class="font-semibold text-lg mb-3">3) Dados para NFe</h2>
+        <form id="nfeForm" class="space-y-3">
+          <select id="nfeSelect" required class="w-full rounded-lg border border-slate-300 px-3 py-2"></select>
+          <input id="nfeRazao" placeholder="Razão social / nome" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <div class="grid sm:grid-cols-2 gap-3">
+            <input id="nfeCpfCnpj" placeholder="CPF/CNPJ" maxlength="18" class="rounded-lg border border-slate-300 px-3 py-2" />
+            <input id="nfeIe" placeholder="Inscrição estadual" class="rounded-lg border border-slate-300 px-3 py-2" />
+          </div>
+          <input id="nfeEndereco" placeholder="Endereço fiscal" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+          <button class="w-full rounded-lg bg-yellow-400 hover:bg-yellow-300 text-blue-900 py-2 font-semibold">Salvar NFe</button>
+        </form>
+      </article>
+    </section>
+
+    <section class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+        <h2 class="text-lg font-semibold">Pipeline atual + filtros avançados</h2>
+        <div class="flex gap-2 flex-wrap">
+          <select id="filtroStatus" class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            <option value="TODOS">Todos</option>
+            <option value="PENDENTE">Pendentes</option>
+            <option value="ORCAMENTO">Orçamentos</option>
+            <option value="VENDA">Vendas</option>
+            <option value="ATRASADO">Atrasados</option>
+          </select>
+          <select id="filtroPrioridade" class="rounded-lg border border-slate-300 px-3 py-2 text-sm">
+            <option value="TODAS">Todas prioridades</option>
+            <option value="NORMAL">Normal</option>
+            <option value="ALTA">Alta</option>
+            <option value="URGENTE">Urgente</option>
+          </select>
+          <button id="btnCsv" class="rounded-lg border border-slate-600 px-3 py-2 text-sm hover:bg-slate-100">Exportar CSV</button>
+        </div>
+      </div>
+      <div id="cards" class="grid lg:grid-cols-2 gap-4"></div>
+    </section>
+
+    <section class="grid xl:grid-cols-3 gap-6">
+      <article class="xl:col-span-2 bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+        <h2 class="text-lg font-semibold mb-3">Kanban operacional</h2>
+        <div id="kanban" class="grid md:grid-cols-4 gap-3"></div>
+      </article>
+      <article class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+        <h2 class="text-lg font-semibold mb-3">Alertas e próximos contatos</h2>
+        <div id="alertas" class="space-y-2"></div>
+      </article>
+    </section>
+
+    <section class="bg-white border border-slate-200 shadow-sm rounded-2xl p-5">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+        <h2 class="text-lg font-semibold">Histórico de orçamentos e vendas</h2>
+        <input id="histBusca" placeholder="Buscar cliente/telefone" class="rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+      </div>
+      <div id="historico" class="space-y-2"></div>
+    </section>
+  </main>
+
+  <div id="modal" class="hidden fixed inset-0 bg-black/40 p-4 z-50">
+    <div class="max-w-2xl mx-auto mt-6 bg-white border border-slate-300 rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-lg">Detalhes do registro</h3>
+        <button id="fecharModal" class="text-slate-700">✕</button>
+      </div>
+      <div id="modalBody" class="text-sm space-y-1"></div>
+    </div>
+  </div>
+
+  <div id="novaVisitaModal" class="hidden fixed inset-0 bg-black/40 p-4 z-50">
+    <div class="max-w-lg mx-auto mt-16 bg-white border border-slate-300 rounded-2xl p-5">
+      <h3 class="font-semibold mb-3">Agendar nova visita</h3>
+      <form id="novaVisitaForm" class="space-y-3">
+        <input id="novaVisitaData" type="date" required class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+        <input id="novaVisitaHorario" required placeholder="Melhor horário" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+        <div class="flex gap-2 justify-end">
+          <button type="button" id="cancelarNovaVisita" class="rounded-lg border border-slate-600 px-3 py-2 text-sm">Cancelar</button>
+          <button class="rounded-lg bg-blue-600 text-white px-3 py-2 text-sm font-semibold">Salvar visita</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-4 right-4 bg-slate-900 text-white px-4 py-2 rounded-lg shadow text-sm"></div>
+
+  <script>
+    const APP_VERSION = 3;
+    const STORAGE_KEY = 'toldosClassicCRM_v6';
+    const $ = (id) => document.getElementById(id);
+    const state = { registros: [], registroNovaVisitaId: null };
+
+    const brl = (v) => v ? Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) : '-';
+    const maps = (e) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e || '')}`;
+    const whats = (t) => `https://wa.me/55${(t || '').replace(/\D/g, '')}`;
+    const today = () => new Date().toISOString().slice(0,10);
+
+    const parseCurrency = (v) => Number(String(v || '').replace(/\./g, '').replace(',', '.').replace(/[^\d.-]/g, '')) || 0;
+    const formatCurrencyInput = (v) => {
+      const n = parseCurrency(v);
+      if (!n) return '';
+      return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+    const maskHorario = (v) => {
+      const d = String(v || '').replace(/\D/g, '').slice(0,4);
+      if (d.length <= 2) return d;
+      return `${d.slice(0,2)}:${d.slice(2)}`;
+    };
+    const maskCpfCnpj = (v) => {
+      const d = String(v || '').replace(/\D/g, '');
+      if (d.length <= 11) return d.replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+      return d.slice(0,14).replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1/$2').replace(/(\d{4})(\d{1,2})$/, '$1-$2');
+    };
+
+    function toast(msg) {
+      const el = $('toast');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      setTimeout(() => el.classList.add('hidden'), 2200);
+    }
+
+    function persist() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: APP_VERSION, registros: state.registros }));
+    }
+
+    function load() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        state.registros = Array.isArray(parsed) ? parsed : (parsed.registros || []);
+      } catch {
+        state.registros = [];
+      }
+    }
+
+    function addLog(reg, acao) {
+      reg.log = reg.log || [];
+      reg.log.unshift({ quando: new Date().toISOString(), acao });
+      reg.log = reg.log.slice(0, 12);
+    }
+
+    const readImage = (file) => new Promise((resolve) => {
+      if (!file) return resolve('');
+      const fr = new FileReader();
+      fr.onload = () => resolve(fr.result);
+      fr.onerror = () => resolve('');
+      fr.readAsDataURL(file);
+    });
+
+    function effectiveStatus(r) {
+      if (r.status === 'PENDENTE' && r.dataVisita && r.dataVisita < today()) return 'ATRASADO';
+      return r.status;
+    }
+
+    function setupPayment() {
+      const ativo = ['CARTAO_CREDITO', 'BOLETO'].includes($('formaPagamento').value);
+      $('parceladoBox').classList.toggle('hidden', !ativo);
+      $('qtdParcelas').required = ativo;
+      const total = parseCurrency($('valorVenda').value || 0);
+      const qtd = Number($('qtdParcelas').value || 0);
+      $('valorParcela').value = ativo && total > 0 && qtd > 0 ? brl(total / qtd) : '';
+    }
+
+    function fillSelects() {
+      const opts = ['<option value="">Selecione a visita...</option>'].concat(
+        state.registros.map(r => `<option value="${r.id}">${r.cliente} • #${r.numeroVisita || 1} • ${r.dataVisita} • ${effectiveStatus(r)}</option>`)
+      );
+      $('visitaSelect').innerHTML = opts.join('');
+      $('nfeSelect').innerHTML = opts.join('');
+    }
+
+    function renderKpis() {
+      const r = state.registros;
+      const pend = r.filter(x => effectiveStatus(x) === 'PENDENTE').length;
+      const atras = r.filter(x => effectiveStatus(x) === 'ATRASADO').length;
+      const orc = r.filter(x => x.status === 'ORCAMENTO').length;
+      const vend = r.filter(x => x.status === 'VENDA').length;
+      const total = r.filter(x => x.status === 'VENDA').reduce((a,b)=>a+Number(b.valorVenda||0),0);
+      $('kpis').innerHTML = `
+        <div class="rounded-xl bg-white border border-slate-200 shadow-sm p-4"><p class="text-xs text-slate-500">Pendentes</p><p class="text-2xl font-bold">${pend}</p></div>
+        <div class="rounded-xl bg-white border border-slate-200 shadow-sm p-4"><p class="text-xs text-slate-500">Atrasados</p><p class="text-2xl font-bold text-red-600">${atras}</p></div>
+        <div class="rounded-xl bg-white border border-slate-200 shadow-sm p-4"><p class="text-xs text-slate-500">Orçamentos</p><p class="text-2xl font-bold">${orc}</p></div>
+        <div class="rounded-xl bg-white border border-slate-200 shadow-sm p-4"><p class="text-xs text-slate-500">Vendas</p><p class="text-2xl font-bold">${vend}</p></div>
+        <div class="rounded-xl bg-white border border-slate-200 shadow-sm p-4"><p class="text-xs text-slate-500">Total vendido</p><p class="text-2xl font-bold">${brl(total)}</p></div>
+      `;
+    }
+
+    function cardActions(r) {
+      return `
+        <button data-action="visualizar" data-id="${r.id}" class="text-xs border border-slate-300 rounded px-2 py-1 hover:bg-slate-100">Visualizar</button>
+        <button data-action="editar" data-id="${r.id}" class="text-xs border border-slate-300 rounded px-2 py-1 hover:bg-slate-100">Editar</button>
+        <button data-action="nova-visita" data-id="${r.id}" class="text-xs border border-slate-300 rounded px-2 py-1 hover:bg-slate-100">Nova visita</button>
+        <button data-action="excluir" data-id="${r.id}" class="text-xs border border-red-300 text-red-700 rounded px-2 py-1 hover:bg-red-50">Excluir</button>
+        ${r.status === 'ORCAMENTO' ? `<button data-action="converter" data-id="${r.id}" class="text-xs border border-blue-300 text-blue-700 rounded px-2 py-1 hover:bg-blue-50">Converter em venda</button>` : ''}
+        ${r.status === 'VENDA' ? `<button data-action=\"whatsapp-venda\" data-id=\"${r.id}\" class=\"text-xs border border-emerald-300 text-emerald-700 rounded px-2 py-1 hover:bg-emerald-50\">Enviar venda no WhatsApp</button><button data-action=\"print-venda\" data-id=\"${r.id}\" class=\"text-xs border border-violet-300 text-violet-700 rounded px-2 py-1 hover:bg-violet-50\">Gerar PDF A4</button>` : ''}
+      `;
+    }
+
+    function renderCards() {
+      const fs = $('filtroStatus').value;
+      const fp = $('filtroPrioridade').value;
+      const itens = state.registros
+        .filter(r => fs === 'TODOS' ? true : effectiveStatus(r) === fs)
+        .filter(r => fp === 'TODAS' ? true : r.prioridade === fp)
+        .sort((a,b)=>new Date(a.dataVisita)-new Date(b.dataVisita));
+
+      $('cards').innerHTML = itens.length ? '' : '<p class="text-slate-500">Nenhum registro encontrado.</p>';
+      for (const r of itens) {
+        const st = effectiveStatus(r);
+        const chip = st==='VENDA'?'bg-yellow-100 text-blue-900':st==='ORCAMENTO'?'bg-blue-100 text-blue-800':st==='ATRASADO'?'bg-red-100 text-red-700':'bg-amber-100 text-amber-700';
+        const el = document.createElement('article');
+        el.className = 'rounded-xl border border-slate-200 bg-white p-4 shadow-sm';
+        el.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-semibold">${r.cliente} <span class="text-xs text-slate-500">visita #${r.numeroVisita || 1}</span></h3>
+              <p class="text-sm text-slate-500">${r.telefone} ${r.email ? `• ${r.email}` : ''}</p>
+            </div>
+            <span class="text-xs px-2 py-1 rounded-full ${chip}">${st}</span>
+          </div>
+          <div class="mt-2 text-sm space-y-1">
+            <p><strong>Visita:</strong> ${r.dataVisita} (${r.melhorHorario})</p>
+            <p><strong>Cidade:</strong> ${r.cidade || '-'}</p>
+            <p><strong>Prioridade:</strong> ${r.prioridade || 'NORMAL'}</p>
+            <p><strong>Valor:</strong> ${brl(r.valorVenda)}</p>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <a target="_blank" href="${maps(r.endereco)}" class="text-xs border border-slate-300 rounded px-2 py-1 hover:bg-slate-100">Maps</a>
+            <a target="_blank" href="${whats(r.telefone)}" class="text-xs border border-slate-300 rounded px-2 py-1 hover:bg-slate-100">WhatsApp</a>
+            ${cardActions(r)}
+          </div>
+        `;
+        $('cards').appendChild(el);
+      }
+    }
+
+    function renderKanban() {
+      const columns = ['PENDENTE','ATRASADO','ORCAMENTO','VENDA'];
+      $('kanban').innerHTML = '';
+      for (const col of columns) {
+        const list = state.registros.filter(r => effectiveStatus(r) === col);
+        const card = document.createElement('div');
+        card.className = 'rounded-xl border border-slate-200 bg-slate-50 p-3';
+        card.innerHTML = `<h3 class="font-semibold text-sm mb-2">${col} (${list.length})</h3>`;
+        for (const r of list.slice(0,6)) {
+          const row = document.createElement('button');
+          row.className = 'w-full text-left text-xs mb-1 p-2 bg-white border border-slate-200 rounded hover:bg-slate-100';
+          row.setAttribute('data-action','visualizar');
+          row.setAttribute('data-id',r.id);
+          row.textContent = `${r.cliente} • ${r.dataVisita}`;
+          card.appendChild(row);
+        }
+        $('kanban').appendChild(card);
+      }
+    }
+
+    function renderAlertas() {
+      const hoje = today();
+      const alertas = state.registros
+        .filter(r => r.proximoContatoData || effectiveStatus(r)==='ATRASADO')
+        .sort((a,b)=>(a.proximoContatoData||'9999').localeCompare(b.proximoContatoData||'9999'));
+
+      $('alertas').innerHTML = alertas.length ? '' : '<p class="text-sm text-slate-500">Sem alertas no momento.</p>';
+      for (const r of alertas.slice(0,12)) {
+        const due = r.proximoContatoData && r.proximoContatoData <= hoje;
+        const text = effectiveStatus(r)==='ATRASADO'
+          ? `Visita atrasada desde ${r.dataVisita}`
+          : `Próximo contato: ${r.proximoContatoData || '-'} ${r.proximoContatoHora || ''}`;
+        const item = document.createElement('button');
+        item.className = `w-full text-left text-xs rounded border p-2 ${due ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-white border-slate-200'}`;
+        item.setAttribute('data-action','visualizar');
+        item.setAttribute('data-id',r.id);
+        item.textContent = `${r.cliente} — ${text}`;
+        $('alertas').appendChild(item);
+      }
+    }
+
+    function renderHistorico() {
+      const termo = ($('histBusca').value || '').toLowerCase();
+      const itens = state.registros
+        .filter(r => ['ORCAMENTO','VENDA'].includes(r.status))
+        .filter(r => `${r.cliente} ${r.telefone}`.toLowerCase().includes(termo))
+        .sort((a,b)=>new Date(b.dataVisita)-new Date(a.dataVisita));
+      $('historico').innerHTML = itens.length ? '' : '<p class="text-slate-500">Sem histórico.</p>';
+      for (const r of itens) {
+        const row = document.createElement('div');
+        row.className='rounded-lg border border-slate-200 p-3 flex items-center justify-between bg-white';
+        row.innerHTML = `<div><p class="font-medium">${r.cliente} <span class="text-xs text-slate-500">#${r.numeroVisita || 1}</span></p><p class="text-xs text-slate-500">${r.dataVisita} • ${r.status} • ${brl(r.valorVenda)}</p></div><div class="flex gap-2">${cardActions(r)}</div>`;
+        $('historico').appendChild(row);
+      }
+    }
+
+    function render() {
+      fillSelects();
+      renderKpis();
+      renderCards();
+      renderKanban();
+      renderAlertas();
+      renderHistorico();
+    }
+
+
+    function openWhatsSale(reg) {
+      const telefone = String(reg.telefone || '').replace(/\D/g, '');
+      if (!telefone) {
+        toast('Telefone do cliente não encontrado para envio no WhatsApp.');
+        return;
+      }
+      if (!(Number(reg.valorVenda) > 0)) {
+        toast('Venda sem valor definido. Atualize a venda antes de enviar.');
+        return;
+      }
+
+      const msg = [
+        '*Toldos Classic - VENDA COMPLETA*',
+        `Cliente: ${reg.cliente || '-'}`,
+        `Telefone: ${reg.telefone || '-'}`,
+        `E-mail: ${reg.email || '-'}`,
+        `Contato: ${reg.contato || '-'}`,
+        `Status: ${reg.status || '-'}`,
+        `Data do chamado: ${reg.dataChamado || '-'}`,
+        `Data da visita: ${reg.dataVisita || '-'}`,
+        `Horário: ${reg.melhorHorario || '-'}`,
+        `Cidade: ${reg.cidade || '-'}`,
+        `Endereço: ${reg.endereco || '-'}`,
+        `Prioridade: ${reg.prioridade || '-'}`,
+        `Valor: ${brl(reg.valorVenda)}`,
+        `Pagamento: ${reg.formaPagamento || '-'}`,
+        `${reg.qtdParcelas ? `Parcelas: ${reg.qtdParcelas}x de ${brl(reg.valorParcela)}` : 'Parcelas: -'}`,
+        `Prazo de instalação: ${reg.prazoInstalacao || '-'}`,
+        `Próximo contato: ${reg.proximoContatoData || '-'} ${reg.proximoContatoHora || ''}`,
+        `Observações: ${reg.observacaoVisita || '-'}`,
+        `NFe Razão/Nome: ${reg.nfeRazao || '-'}`,
+        `NFe CPF/CNPJ: ${reg.nfeCpfCnpj || '-'}`,
+        `NFe IE: ${reg.nfeIe || '-'}`,
+        `NFe Endereço: ${reg.nfeEndereco || '-'}`,
+        `Desenho anexado: ${reg.desenhoToldo ? 'SIM' : 'NÃO'}`,
+      ].join('\n');
+
+      const url = `https://wa.me/55${telefone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+      addLog(reg, 'Venda completa enviada por WhatsApp');
+      persist();
+      render();
+      toast('WhatsApp aberto com venda completa.');
+    }
+
+    function openPrintSale(reg) {
+      if (!(Number(reg.valorVenda) > 0)) {
+        toast('Não é possível gerar PDF sem valor de venda.');
+        return;
+      }
+      const win = window.open('', '_blank');
+      if (!win) {
+        toast('Permita popups para gerar o PDF A4.');
+        return;
+      }
+
+      const html = `<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><title>Venda ${reg.cliente || ''}</title>
+<style>
+  @page { size: A4; margin: 12mm; }
+  body { font-family: Arial, sans-serif; color: #111; }
+  h1 { font-size: 20px; margin: 0 0 6px 0; color:#182878; }
+  h2 { font-size: 14px; margin: 14px 0 6px 0; border-bottom: 1px solid #ddd; padding-bottom: 3px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+  p { margin: 4px 0; font-size: 12px; }
+  .box { border: 1px solid #ddd; border-radius: 6px; padding: 8px; margin-top: 8px; }
+  img { max-width: 100%; max-height: 260px; border: 1px solid #ddd; border-radius: 6px; margin-top: 8px; }
+</style></head>
+<body>
+  <img src="logo-toldos-classic.png" alt="Logo Toldos Classic" style="max-height:70px; margin-bottom:8px;"/><h1>Toldos Classic • Registro de Venda</h1>
+  <p><strong>Emitido em:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+
+  <h2>Cliente e Visita</h2>
+  <div class="grid box">
+    <p><strong>Cliente:</strong> ${reg.cliente || '-'}</p>
+    <p><strong>Telefone:</strong> ${reg.telefone || '-'}</p>
+    <p><strong>E-mail:</strong> ${reg.email || '-'}</p>
+    <p><strong>Contato:</strong> ${reg.contato || '-'}</p>
+    <p><strong>Chamado:</strong> ${reg.dataChamado || '-'}</p>
+    <p><strong>Visita:</strong> ${reg.dataVisita || '-'} (${reg.melhorHorario || '-'})</p>
+    <p><strong>Cidade:</strong> ${reg.cidade || '-'}</p>
+    <p><strong>Endereço:</strong> ${reg.endereco || '-'}</p>
+  </div>
+
+  <h2>Dados da Venda</h2>
+  <div class="grid box">
+    <p><strong>Status:</strong> ${reg.status || '-'}</p>
+    <p><strong>Valor:</strong> ${brl(reg.valorVenda)}</p>
+    <p><strong>Pagamento:</strong> ${reg.formaPagamento || '-'}</p>
+    <p><strong>Parcelas:</strong> ${reg.qtdParcelas ? `${reg.qtdParcelas}x de ${brl(reg.valorParcela)}` : '-'}</p>
+    <p><strong>Prazo instalação:</strong> ${reg.prazoInstalacao || '-'}</p>
+    <p><strong>Observações:</strong> ${reg.observacaoVisita || '-'}</p>
+  </div>
+
+  <h2>Dados NFe</h2>
+  <div class="grid box">
+    <p><strong>Razão/Nome:</strong> ${reg.nfeRazao || '-'}</p>
+    <p><strong>CPF/CNPJ:</strong> ${reg.nfeCpfCnpj || '-'}</p>
+    <p><strong>IE:</strong> ${reg.nfeIe || '-'}</p>
+    <p><strong>Endereço fiscal:</strong> ${reg.nfeEndereco || '-'}</p>
+  </div>
+
+  <h2>Desenho do Toldo</h2>
+  ${reg.desenhoToldo ? `<img src="${reg.desenhoToldo}" alt="Desenho do toldo"/>` : '<p>Sem imagem anexada.</p>'}
+</body></html>`;
+
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+      win.focus();
+      win.print();
+      addLog(reg, 'PDF A4 de venda gerado/impressão iniciada');
+      persist();
+      render();
+      toast('Janela de impressão/PDF A4 aberta.');
+    }
+
+    function openDetails(reg) {
+      const log = (reg.log || []).map(x => `<li>${new Date(x.quando).toLocaleString('pt-BR')} — ${x.acao}</li>`).join('') || '<li>Sem atividades.</li>';
+      $('modalBody').innerHTML = `
+        <p><strong>Cliente:</strong> ${reg.cliente}</p>
+        <p><strong>Status:</strong> ${effectiveStatus(reg)}</p>
+        <p><strong>Visita:</strong> ${reg.dataVisita} (${reg.melhorHorario})</p>
+        <p><strong>Cidade:</strong> ${reg.cidade || '-'}</p>
+        <p><strong>Valor:</strong> ${brl(reg.valorVenda)}</p>
+        <p><strong>NFe:</strong> ${reg.nfeRazao || '-'} ${reg.nfeCpfCnpj ? `(${reg.nfeCpfCnpj})` : ''}</p>
+        <p><strong>Próximo contato:</strong> ${reg.proximoContatoData || '-'} ${reg.proximoContatoHora || ''}</p>
+        <div class="mt-2"><p class="font-semibold">Log de atividades</p><ul class="list-disc ml-5 text-xs">${log}</ul></div>
+      `;
+      $('modal').classList.remove('hidden');
+    }
+
+    function prepareNfeFromVisit(reg) {
+      $('nfeSelect').value = reg.id;
+      if (!$('nfeEndereco').value.trim()) $('nfeEndereco').value = [reg.endereco, reg.cidade].filter(Boolean).join(' - ');
+      $('nfeCpfCnpj').focus();
+      $('nfeForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function checkDuplicidade() {
+      const tel = String($('telefone').value || '').replace(/\D/g,'');
+      if (!tel) { $('duplicidadeAviso').classList.add('hidden'); return; }
+      const found = state.registros.find(r => String(r.telefone||'').replace(/\D/g,'') === tel);
+      if (found) {
+        $('duplicidadeAviso').textContent = `Atenção: já existe registro para este telefone (${found.cliente}, visita #${found.numeroVisita || 1}).`;
+        $('duplicidadeAviso').classList.remove('hidden');
+      } else {
+        $('duplicidadeAviso').classList.add('hidden');
+      }
+    }
+
+    $('leadForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const reg = {
+        id: crypto.randomUUID(),
+        clienteId: crypto.randomUUID(),
+        numeroVisita: 1,
+        cliente: $('cliente').value.trim(),
+        telefone: $('telefone').value.trim(),
+        email: $('email').value.trim(),
+        contato: $('contato').value.trim(),
+        dataChamado: $('dataChamado').value,
+        dataVisita: $('dataVisita').value,
+        melhorHorario: $('melhorHorario').value.trim(),
+        endereco: $('endereco').value.trim(),
+        cidade: $('cidade').value.trim(),
+        prioridade: $('prioridade').value,
+        proximoContatoData: $('proximoContatoData').value,
+        proximoContatoHora: $('proximoContatoHora').value.trim(),
+        lembretes: $('lembretes').value.trim(),
+        status: 'PENDENTE',
+        convertidoOrcamentoEmVenda: false,
+        log: []
+      };
+      addLog(reg, 'Chamado criado');
+      state.registros.push(reg);
+      persist();
+      $('leadForm').reset();
+      $('duplicidadeAviso').classList.add('hidden');
+      render();
+      toast('Chamado salvo com sucesso.');
+    });
+
+    $('resultadoForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const reg = state.registros.find(r => r.id === $('visitaSelect').value);
+      if (!reg) return;
+      const prev = reg.status;
+      reg.status = $('tipoResultado').value;
+      reg.tipoResultado = $('tipoResultado').value;
+
+      const saleValue = parseCurrency($('valorVenda').value);
+      if (reg.status === 'VENDA' && saleValue <= 0) {
+        toast('Informe um valor de venda válido antes de salvar.');
+        $('valorVenda').focus();
+        return;
+      }
+
+      reg.valorVenda = reg.status === 'VENDA' ? saleValue : '';
+      reg.formaPagamento = reg.status === 'VENDA' ? $('formaPagamento').value : '';
+      reg.qtdParcelas = (reg.status === 'VENDA' && ['CARTAO_CREDITO','BOLETO'].includes(reg.formaPagamento)) ? $('qtdParcelas').value : '';
+      reg.valorParcela = reg.qtdParcelas ? Number((parseCurrency($('valorVenda').value || 0) / Number($('qtdParcelas').value)).toFixed(2)) : '';
+      reg.prazoInstalacao = reg.status === 'VENDA' ? $('prazoInstalacao').value : '';
+      reg.observacaoVisita = $('observacaoVisita').value.trim();
+      const file = $('desenhoToldo').files[0];
+      if (file) reg.desenhoToldo = await readImage(file);
+      if (prev === 'ORCAMENTO' && reg.status === 'VENDA') reg.convertidoOrcamentoEmVenda = true;
+      addLog(reg, `Visita salva como ${reg.status}`);
+      persist();
+      $('resultadoForm').reset();
+      setupPayment();
+      render();
+      if (reg.status === 'VENDA') prepareNfeFromVisit(reg);
+      toast('Visita atualizada com sucesso.');
+    });
+
+    $('nfeForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const reg = state.registros.find(r => r.id === $('nfeSelect').value);
+      if (!reg) return;
+      reg.nfeRazao = $('nfeRazao').value.trim();
+      reg.nfeCpfCnpj = $('nfeCpfCnpj').value.trim();
+      reg.nfeIe = $('nfeIe').value.trim();
+      reg.nfeEndereco = $('nfeEndereco').value.trim();
+      if ((reg.status === 'VENDA' || reg.tipoResultado === 'VENDA') && !(Number(reg.valorVenda) > 0)) {
+        toast('Não é possível finalizar NFe de venda sem valor de venda.');
+        $('valorVenda').focus();
+        return;
+      }
+      if (reg.status !== 'VENDA' && reg.tipoResultado === 'VENDA') {
+        reg.status = 'VENDA';
+      }
+      addLog(reg, 'Dados fiscais NFe atualizados');
+      persist();
+      $('nfeForm').reset();
+      render();
+      toast('Dados de NFe salvos.');
+    });
+
+    document.body.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const reg = state.registros.find(r => r.id === btn.dataset.id);
+      if (!reg) return;
+
+      if (btn.dataset.action === 'visualizar') return openDetails(reg);
+      if (btn.dataset.action === 'whatsapp-venda') {
+        openWhatsSale(reg);
+        return;
+      }
+      if (btn.dataset.action === 'print-venda') {
+        openPrintSale(reg);
+        return;
+      }
+      if (btn.dataset.action === 'excluir') {
+        if (!confirm('Confirma excluir este registro? Esta ação não pode ser desfeita.')) return;
+        state.registros = state.registros.filter(x => x.id !== reg.id);
+        persist();
+        render();
+        toast('Registro excluído com sucesso.');
+        return;
+      }
+      if (btn.dataset.action === 'converter') {
+        let valor = Number(reg.valorVenda || 0);
+        if (!(valor > 0)) {
+          const informado = prompt('Informe o valor da venda para converter este orçamento:', '0,00');
+          if (informado === null) return;
+          valor = parseCurrency(informado);
+        }
+        if (!(valor > 0)) {
+          toast('Conversão cancelada: informe um valor de venda válido.');
+          return;
+        }
+
+        reg.valorVenda = valor;
+        reg.status = 'VENDA';
+        reg.tipoResultado = 'VENDA';
+        addLog(reg, 'Conversão orçamento→venda confirmada');
+
+        $('visitaSelect').value = reg.id;
+        $('tipoResultado').value = 'VENDA';
+        $('valorVenda').value = formatCurrencyInput(reg.valorVenda);
+        $('formaPagamento').value = reg.formaPagamento || '';
+        $('qtdParcelas').value = reg.qtdParcelas || '';
+        $('prazoInstalacao').value = reg.prazoInstalacao || '';
+        $('observacaoVisita').value = reg.observacaoVisita || '';
+
+        setupPayment();
+        persist();
+        render();
+        prepareNfeFromVisit(reg);
+        toast('Orçamento convertido para VENDA. Complete NFe para finalizar.');
+        return;
+      }
+      if (btn.dataset.action === 'editar') {
+        $('visitaSelect').value = reg.id;
+        $('tipoResultado').value = reg.status || 'ORCAMENTO';
+        $('valorVenda').value = reg.valorVenda ? formatCurrencyInput(reg.valorVenda) : '';
+        $('formaPagamento').value = reg.formaPagamento || '';
+        $('qtdParcelas').value = reg.qtdParcelas || '';
+        $('observacaoVisita').value = reg.observacaoVisita || '';
+        setupPayment();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      if (btn.dataset.action === 'nova-visita') {
+        state.registroNovaVisitaId = reg.id;
+        $('novaVisitaData').value = '';
+        $('novaVisitaHorario').value = reg.melhorHorario || '';
+        $('novaVisitaModal').classList.remove('hidden');
+      }
+    });
+
+    $('novaVisitaForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const base = state.registros.find(r => r.id === state.registroNovaVisitaId);
+      if (!base) return;
+      const visitas = state.registros.filter(r => r.clienteId === base.clienteId).length;
+      const novo = {
+        ...base,
+        id: crypto.randomUUID(),
+        numeroVisita: visitas + 1,
+        dataChamado: today(),
+        dataVisita: $('novaVisitaData').value,
+        melhorHorario: $('novaVisitaHorario').value,
+        status: 'PENDENTE',
+        tipoResultado: '',
+        valorVenda: '',
+        formaPagamento: '',
+        qtdParcelas: '',
+        valorParcela: '',
+        observacaoVisita: '',
+        convertidoOrcamentoEmVenda: false,
+        desenhoToldo: '',
+        log: []
+      };
+      addLog(novo, 'Nova visita agendada');
+      state.registros.push(novo);
+      persist();
+      $('novaVisitaModal').classList.add('hidden');
+      render();
+      toast('Nova visita agendada.');
+    });
+
+    $('btnCsv').addEventListener('click', () => {
+      if (!state.registros.length) return;
+      const cols = ['clienteId','numeroVisita','cliente','telefone','email','contato','dataChamado','dataVisita','melhorHorario','endereco','cidade','prioridade','proximoContatoData','proximoContatoHora','lembretes','status','tipoResultado','valorVenda','formaPagamento','qtdParcelas','valorParcela','prazoInstalacao','observacaoVisita','convertidoOrcamentoEmVenda','nfeRazao','nfeCpfCnpj','nfeIe','nfeEndereco'];
+      const lines = [cols.join(',')];
+      state.registros.forEach(r => lines.push(cols.map(c => `"${String(r[c] || '').replaceAll('"','""')}"`).join(',')));
+      const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'toldos-classic-crm.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('CSV exportado.');
+    });
+
+    $('cancelarNovaVisita').addEventListener('click', () => $('novaVisitaModal').classList.add('hidden'));
+    $('fecharModal').addEventListener('click', () => $('modal').classList.add('hidden'));
+    $('modal').addEventListener('click', (e) => { if (e.target === $('modal')) $('modal').classList.add('hidden'); });
+    $('filtroStatus').addEventListener('change', renderCards);
+    $('filtroPrioridade').addEventListener('change', renderCards);
+    $('histBusca').addEventListener('input', renderHistorico);
+    $('formaPagamento').addEventListener('change', setupPayment);
+    $('valorVenda').addEventListener('input', setupPayment);
+    $('qtdParcelas').addEventListener('input', setupPayment);
+    $('valorVenda').addEventListener('blur', () => $('valorVenda').value = formatCurrencyInput($('valorVenda').value));
+    $('nfeCpfCnpj').addEventListener('input', () => $('nfeCpfCnpj').value = maskCpfCnpj($('nfeCpfCnpj').value));
+    $('melhorHorario').addEventListener('input', () => $('melhorHorario').value = maskHorario($('melhorHorario').value));
+    $('novaVisitaHorario').addEventListener('input', () => $('novaVisitaHorario').value = maskHorario($('novaVisitaHorario').value));
+    $('proximoContatoHora').addEventListener('input', () => $('proximoContatoHora').value = maskHorario($('proximoContatoHora').value));
+    $('telefone').addEventListener('input', checkDuplicidade);
+
+    load();
+    render();
+    setupPayment();
+  </script>
+</body>
+</html>
